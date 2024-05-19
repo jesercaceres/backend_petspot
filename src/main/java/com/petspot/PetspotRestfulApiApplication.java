@@ -6,8 +6,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class PetspotRestfulApiApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(PetspotRestfulApiApplication.class, args);
-	}
-
+    public static void main(String[] args) {
+        SpringApplication.run(PetspotRestfulApiApplication.class, args);
+    }
 }

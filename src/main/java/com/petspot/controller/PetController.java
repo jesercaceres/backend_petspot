@@ -4,10 +4,14 @@ import com.petspot.dto.pet.RegisterPetDTO;
 import com.petspot.dto.pet.SavedDatasPetDTO;
 import com.petspot.dto.pet.UpdatePetDTO;
 import com.petspot.dto.pet.UpdatePetWeightDTO;
+import com.petspot.exceptions.DuplicatePetException;
 import com.petspot.model.Pet;
 import com.petspot.model.PetOwner;
 import com.petspot.repository.PetOwnerRepository;
 import com.petspot.repository.PetRepository;
+
+import jakarta.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,13 +34,25 @@ public class PetController {
 
     @PostMapping("/{id}")
     @Transactional
-    public ResponseEntity registerPet(@RequestBody RegisterPetDTO petDTO, @PathVariable(name = "id") String param,
+    public ResponseEntity<SavedDatasPetDTO> registerPet(@Valid @RequestBody RegisterPetDTO petDTO, @PathVariable(name = "id") String param,
             UriComponentsBuilder uriBuilder) {
+
+        // Busca o dono do pet pelo ID fornecido na URL
         PetOwner owner = ownerRepository.getReferenceById(param);
 
+        // Verifica se um pet duplicado já existe
+        boolean petExists = petRepository.existsByPetNameAndSpecieAndGenderAndRaceAndPetBirthday(
+                petDTO.nome(), petDTO.especie(), petDTO.genero(), petDTO.raca(), petDTO.getDate());
+
+        if (petExists) {
+            throw new DuplicatePetException("Pet com os mesmos atributos já existe.");
+        }
+
+        // Cria um novo objeto Pet a partir do DTO e salva no banco de dados
         Pet pet = new Pet(petDTO);
         petRepository.save(pet);
 
+        // Adiciona o pet ao dono e atualiza o dono no banco de dados
         owner.getPet().add(pet);
         ownerRepository.save(owner);
 
@@ -58,22 +74,29 @@ public class PetController {
         return ResponseEntity.ok(petDTOs);
     }
 
-    @GetMapping("/meuspets/buscarpet/{petName}")
-    public ResponseEntity<List<SavedDatasPetDTO>> getPetsByName(@PathVariable("petName") String petName) {
-        System.out.println("Buscando pets com o nome: " + petName);
+    @GetMapping("/meuspets/{ownerId}/buscarpet/{petName}")
+public ResponseEntity<List<SavedDatasPetDTO>> getPetsByName(@PathVariable("ownerId") String ownerId, @PathVariable("petName") String petName) {
+    System.out.println("Buscando pets com o nome: " + petName + " para o dono com ID: " + ownerId);
 
-        List<Pet> pets = petRepository.findByPetNameContainingIgnoreCase(petName);
+    // Busca o dono do pet pelo ID fornecido na URL
+    PetOwner owner = ownerRepository.findById(ownerId)
+            .orElseThrow(() -> new RuntimeException("Owner not found with id: " + ownerId));
 
-        if (pets.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
+    // Filtra os pets do dono pelo nome
+    List<Pet> pets = owner.getPet().stream()
+            .filter(pet -> pet.getPetName().equalsIgnoreCase(petName))
+            .collect(Collectors.toList());
 
-        List<SavedDatasPetDTO> petDTOs = pets.stream()
-                .map(pet -> new SavedDatasPetDTO(pet.getId(), pet.getPetName(), pet.getGender(), pet.getPetBirthday()))
-                .collect(Collectors.toList());
-
-        return ResponseEntity.ok(petDTOs);
+    if (pets.isEmpty()) {
+        return ResponseEntity.notFound().build();
     }
+
+    List<SavedDatasPetDTO> petDTOs = pets.stream()
+            .map(pet -> new SavedDatasPetDTO(pet.getId(), pet.getPetName(), pet.getGender(), pet.getPetBirthday()))
+            .collect(Collectors.toList());
+
+    return ResponseEntity.ok(petDTOs);
+}
 
     @PatchMapping("/meuspets/renomear/{petId}")
     public ResponseEntity<SavedDatasPetDTO> renamePet(@PathVariable String petId,

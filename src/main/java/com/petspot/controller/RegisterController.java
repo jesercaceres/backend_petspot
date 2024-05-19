@@ -21,7 +21,7 @@ public class RegisterController {
     private LoginRepository loginRepository;
 
     @PostMapping
-    private ResponseEntity register(@RequestBody @Validated RegisterDTO registerDTO, UriComponentsBuilder uriBuilder) {
+    public ResponseEntity<EmailDTO> register(@RequestBody @Validated RegisterDTO registerDTO, UriComponentsBuilder uriBuilder) {
         Login login = new Login(registerDTO);
         PetOwner petOwner = new PetOwner(registerDTO);
 
@@ -33,5 +33,4 @@ public class RegisterController {
 
         return ResponseEntity.created(uri).body(new EmailDTO(login.getEmail()));
     }
-
 }
