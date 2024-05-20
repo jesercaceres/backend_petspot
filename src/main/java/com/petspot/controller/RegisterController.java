@@ -2,6 +2,7 @@ package com.petspot.controller;
 
 import com.petspot.dto.login.EmailDTO;
 import com.petspot.dto.register.RegisterDTO;
+import com.petspot.exceptions.DuplicateEmailException;
 import com.petspot.model.Login;
 import com.petspot.model.PetOwner;
 import com.petspot.repository.LoginRepository;
@@ -21,8 +22,17 @@ public class RegisterController {
     private LoginRepository loginRepository;
 
     @PostMapping
-    public ResponseEntity<EmailDTO> register(@RequestBody @Validated RegisterDTO registerDTO, UriComponentsBuilder uriBuilder) {
-        Login login = new Login(registerDTO);
+    public ResponseEntity<EmailDTO> register(@RequestBody @Validated RegisterDTO registerDTO,
+            UriComponentsBuilder uriBuilder) {
+
+        Login login;
+
+        login = new Login(registerDTO);
+        boolean emailFounded = loginRepository.existsByEmail(login.getEmail());
+        if (emailFounded) {
+            throw new DuplicateEmailException("E-mail já cadastrado");
+        }
+
         PetOwner petOwner = new PetOwner(registerDTO);
 
         login.setPetOwner(petOwner);
