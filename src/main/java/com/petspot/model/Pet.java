@@ -22,16 +22,15 @@ public class Pet {
     private String id;
 
     private String petName;
-
     private String petWeight;
-
     private Date petBirthday;
-
-    private String specie;
-
-    private String race;
-
-    private Integer gender;
+    private String petSpecie;
+    private String petRace;
+    private Integer petGender;
+    private Boolean neutered;
+    private String behavior;
+    private String petSize;
+    private Boolean vaccinated;
 
     @JsonIgnore
     @ManyToMany(mappedBy = "pet")
@@ -39,20 +38,58 @@ public class Pet {
 
     public Pet(RegisterPetDTO petDTO) {
         this.petName = petDTO.nome();
+        this.petBirthday = petDTO.getDate();
+        this.petSpecie = petDTO.especie();
+        this.petRace = petDTO.raca();
+        this.petGender = petDTO.genero();
+        this.neutered = petDTO.castrado();
+        this.behavior = petDTO.comportamento();
+        this.petSize = petDTO.porte();
+        this.vaccinated = petDTO.vacinado();
+    }
 
-        this.specie = petDTO.especie();
+    // Adicionando manualmente os métodos get
+    public String getId() {
+        return id;
+    }
 
-        if (petDTO.genero() != null) {
-            this.gender = petDTO.genero();
-        }
-        if (petDTO.dataDeNascimento() != null) {
-            this.petBirthday = petDTO.getDate();
-        }
-        if (petDTO.peso() != null) {
-            this.petWeight = petDTO.peso();
-        }
-        if (petDTO.raca() != null) {
-            this.race = petDTO.raca();
-        }
+    public String getPetName() {
+        return petName;
+    }
+
+    public String getPetWeight() {
+        return petWeight;
+    }
+
+    public Date getPetBirthday() {
+        return petBirthday;
+    }
+
+    public String getPetSpecie() {
+        return petSpecie;
+    }
+
+    public String getPetRace() {
+        return petRace;
+    }
+
+    public Integer getPetGender() {
+        return petGender;
+    }
+
+    public Boolean getNeutered() {
+        return neutered;
+    }
+
+    public String getBehavior() {
+        return behavior;
+    }
+
+    public String getPetSize() {
+        return petSize;
+    }
+
+    public Boolean getVaccinated() {
+        return vaccinated;
     }
 }

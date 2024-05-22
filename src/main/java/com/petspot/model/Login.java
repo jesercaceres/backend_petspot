@@ -34,4 +34,8 @@ public class Login {
         this.passwordLogin = registerDTO.senha();
         this.typeOfUser = registerDTO.usuario();
     }
+
+    public String getOwnerId() {
+        return petOwner != null ? petOwner.getId() : null;
+    }
 }

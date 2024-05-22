@@ -13,6 +13,7 @@ import com.petspot.repository.PetRepository;
 import jakarta.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -32,17 +33,21 @@ public class PetController {
     @Autowired
     private PetOwnerRepository ownerRepository;
 
-    @PostMapping("/{id}")
+    @PostMapping("/pet-register/{id}")
     @Transactional
-    public ResponseEntity<SavedDatasPetDTO> registerPet(@Valid @RequestBody RegisterPetDTO petDTO, @PathVariable(name = "id") String param,
+    public ResponseEntity<SavedDatasPetDTO> registerPet(@Valid @RequestBody RegisterPetDTO petDTO,
+            @PathVariable(name = "id") String ownerId,
             UriComponentsBuilder uriBuilder) {
 
         // Busca o dono do pet pelo ID fornecido na URL
-        PetOwner owner = ownerRepository.getReferenceById(param);
+        PetOwner owner = ownerRepository.findById(ownerId)
+                .orElseThrow(() -> new RuntimeException("Owner not found with id: " + ownerId));
 
         // Verifica se um pet duplicado já existe
-        boolean petExists = petRepository.existsByPetNameAndSpecieAndGenderAndRaceAndPetBirthday(
-                petDTO.nome(), petDTO.especie(), petDTO.genero(), petDTO.raca(), petDTO.getDate());
+        boolean petExists = petRepository
+                .existsByPetNameAndPetSpecieAndPetGenderAndPetRaceAndNeuteredAndBehaviorAndPetSizeAndVaccinatedAndPetBirthday(
+                        petDTO.nome(), petDTO.especie(), petDTO.genero(), petDTO.raca(), petDTO.castrado(),
+                        petDTO.comportamento(), petDTO.porte(), petDTO.vacinado(), petDTO.getDate());
 
         if (petExists) {
             throw new DuplicatePetException("Pet com os mesmos atributos já existe.");
@@ -68,59 +73,108 @@ public class PetController {
 
         List<Pet> pets = new ArrayList<>(owner.getPet());
         List<SavedDatasPetDTO> petDTOs = pets.stream()
-                .map(pet -> new SavedDatasPetDTO(pet.getId(), pet.getPetName(), pet.getGender(), pet.getPetBirthday()))
+                .map(pet -> new SavedDatasPetDTO(
+                        pet.getId(),
+                        pet.getPetName(),
+                        pet.getPetSpecie(),
+                        pet.getPetGender(),
+                        pet.getPetRace(),
+                        pet.getNeutered(),
+                        pet.getBehavior(),
+                        pet.getPetSize(),
+                        pet.getVaccinated(),
+                        pet.getPetBirthday()))
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok(petDTOs);
     }
 
-    @GetMapping("/meuspets/{ownerId}/buscarpet/{petName}")
-public ResponseEntity<List<SavedDatasPetDTO>> getPetsByName(@PathVariable("ownerId") String ownerId, @PathVariable("petName") String petName) {
-    System.out.println("Buscando pets com o nome: " + petName + " para o dono com ID: " + ownerId);
+    @GetMapping("/meuspets/{ownerId}/buscarpet")
+    public ResponseEntity<List<SavedDatasPetDTO>> getPetsByName(@PathVariable String ownerId,
+            @RequestParam String petName) {
+        System.out.println("Buscando pets com o nome que contém: " + petName + " para o dono com ID: " + ownerId);
 
-    // Busca o dono do pet pelo ID fornecido na URL
-    PetOwner owner = ownerRepository.findById(ownerId)
-            .orElseThrow(() -> new RuntimeException("Owner not found with id: " + ownerId));
+        // Busca o dono do pet pelo ID fornecido na URL
+        PetOwner owner = ownerRepository.findById(ownerId)
+                .orElseThrow(() -> new RuntimeException("Owner not found with id: " + ownerId));
 
-    // Filtra os pets do dono pelo nome
-    List<Pet> pets = owner.getPet().stream()
-            .filter(pet -> pet.getPetName().equalsIgnoreCase(petName))
-            .collect(Collectors.toList());
+        // Filtra os pets do dono pelo nome parcial
+        List<Pet> pets = owner.getPet().stream()
+                .filter(pet -> pet.getPetName().toLowerCase().contains(petName.toLowerCase()))
+                .collect(Collectors.toList());
 
-    if (pets.isEmpty()) {
-        return ResponseEntity.notFound().build();
+        if (pets.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        List<SavedDatasPetDTO> petDTOs = pets.stream()
+                .map(pet -> new SavedDatasPetDTO(
+                        pet.getId(),
+                        pet.getPetName(),
+                        pet.getPetSpecie(),
+                        pet.getPetGender(),
+                        pet.getPetRace(),
+                        pet.getNeutered(),
+                        pet.getBehavior(),
+                        pet.getPetSize(),
+                        pet.getVaccinated(),
+                        pet.getPetBirthday()))
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(petDTOs);
     }
 
-    List<SavedDatasPetDTO> petDTOs = pets.stream()
-            .map(pet -> new SavedDatasPetDTO(pet.getId(), pet.getPetName(), pet.getGender(), pet.getPetBirthday()))
-            .collect(Collectors.toList());
-
-    return ResponseEntity.ok(petDTOs);
-}
-
-    @PatchMapping("/meuspets/renomear/{petId}")
-    public ResponseEntity<SavedDatasPetDTO> renamePet(@PathVariable String petId,
+    @PatchMapping("/meuspets/{ownerId}/renomear/{petId}")
+    public ResponseEntity<String> renamePet(@PathVariable String ownerId,
+            @PathVariable String petId,
             @RequestBody UpdatePetDTO updatePetDTO) {
-        Pet pet = petRepository.findById(petId)
-                .orElseThrow(() -> new RuntimeException("Pet not found with id: " + petId));
+        try {
+            Pet pet = petRepository.findById(petId)
+                    .orElseThrow(() -> new RuntimeException("Pet not found with id: " + petId));
 
-        pet.setPetName(updatePetDTO.petName());
-        petRepository.save(pet);
+            // Verifica se o pet pertence ao PetOwner fornecido
+            boolean isOwner = pet.getPetOwners().stream()
+                    .anyMatch(owner -> owner.getId().equals(ownerId));
 
-        SavedDatasPetDTO responseDto = new SavedDatasPetDTO(pet);
-        return ResponseEntity.ok(responseDto);
+            if (!isOwner) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body("Você não tem permissão para renomear este pet.");
+            }
+
+            pet.setPetName(updatePetDTO.petName());
+            petRepository.save(pet);
+
+            return ResponseEntity.ok("Nome atualizado com sucesso.");
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("Erro ao atualizar o nome do pet: " + e.getMessage());
+        }
     }
 
-    @PatchMapping("/meuspets/atualizarpeso/{petId}")
-    public ResponseEntity<SavedDatasPetDTO> updatePetWeight(@PathVariable String petId,
+    @PatchMapping("/meuspets/{ownerId}/atualizarpeso/{petId}")
+    public ResponseEntity<String> updatePetWeight(@PathVariable String ownerId,
+            @PathVariable String petId,
             @RequestBody UpdatePetWeightDTO updatePetWeightDTO) {
-        Pet pet = petRepository.findById(petId)
-                .orElseThrow(() -> new RuntimeException("Pet not found with id: " + petId));
+        try {
+            Pet pet = petRepository.findById(petId)
+                    .orElseThrow(() -> new RuntimeException("Pet not found with id: " + petId));
 
-        pet.setPetWeight(updatePetWeightDTO.peso());
-        petRepository.save(pet);
+            // Verifica se o pet pertence ao PetOwner fornecido
+            boolean isOwner = pet.getPetOwners().stream()
+                    .anyMatch(owner -> owner.getId().equals(ownerId));
 
-        SavedDatasPetDTO responseDto = new SavedDatasPetDTO(pet);
-        return ResponseEntity.ok(responseDto);
+            if (!isOwner) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body("Você não tem permissão para atualizar o peso deste pet.");
+            }
+
+            pet.setPetWeight(updatePetWeightDTO.peso());
+            petRepository.save(pet);
+
+            return ResponseEntity.ok("Peso atualizado com sucesso.");
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("Erro ao atualizar o peso do pet: " + e.getMessage());
+        }
     }
 }

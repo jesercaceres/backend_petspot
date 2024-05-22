@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
 @RestController
-@RequestMapping("register")
+@RequestMapping("/petspot/register")
 public class RegisterController {
     @Autowired
     private LoginRepository loginRepository;

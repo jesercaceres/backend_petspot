@@ -17,13 +17,13 @@ public class LoginController {
 
     @PostMapping
     public ResponseEntity<String> signIn(@RequestBody @Valid LoginDTO loginDTO) {
-
         Login auth = repository.findByEmailAndPasswordLogin(loginDTO.email(), loginDTO.senha());
 
         if (auth != null) {
-            return ResponseEntity.ok("Autenticação bem-sucedida.");
+            // Retorna o ID do tutor no corpo da resposta
+            return ResponseEntity.ok(auth.getOwnerId());
         }
 
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciais inválidas. Autenticação falhou");
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciais inválidas, verifique os dados e tente novamente.");
     }
 }

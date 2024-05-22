@@ -13,7 +13,11 @@ public record RegisterPetDTO(
         @NotBlank(message = "Espécie é obrigatória") String especie,
         @NotNull(message = "Gênero é obrigatório") Integer genero,
         @NotBlank(message = "Raça é obrigatória") String raca,
-        @NotBlank(message = "Peso é obrigatório") String peso,
+        String peso,
+        @NotNull(message = "Deve específicar se o Animal foi castrado")Boolean castrado,
+        @NotBlank(message = "comportamento é obrigatório")String comportamento,
+        @NotBlank(message = "Porte é obrigatório")String porte,
+        @NotNull(message = "Deve específicar se o animal foi vacinado")Boolean vacinado,
         @NotBlank(message = "Data de nascimento é obrigatória")
         @Pattern(regexp = "\\d{2}/\\d{2}/\\d{4}", message = "Data deve estar no formato dd/MM/yyyy") String dataDeNascimento) {
     
