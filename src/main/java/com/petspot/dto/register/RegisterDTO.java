@@ -9,6 +9,7 @@ import java.util.Date;
 public record RegisterDTO(
         @Email String email,
         String senha,
+        String repetirSenha,
         String usuario,
         String nome,
         String sobrenome,
@@ -23,4 +24,14 @@ public record RegisterDTO(
             throw new RuntimeException(e);
         }
     }
+
+    public String senha() {
+        return senha;
+    }
+
+    public String repetirSenha() {
+        return repetirSenha;
+    }
+
+    
 }
