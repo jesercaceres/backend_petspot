@@ -26,6 +26,7 @@ public class RegisterController {
     public ResponseEntity<EmailDTO> register(@RequestBody @Validated RegisterDTO registerDTO,
             UriComponentsBuilder uriBuilder) throws PasswordsNotMatchingException, DuplicateEmailException {
 
+<<<<<<< HEAD
         // Verifica se o e-mail já está cadastrado
         boolean emailFounded = loginRepository.existsByEmail(registerDTO.email());
         if (emailFounded) {
@@ -51,6 +52,27 @@ public class RegisterController {
         var uri = uriBuilder.path("/profile/{id}").buildAndExpand(login.getId()).toUri();
 
         // Retorna a resposta com a URI do novo recurso e o e-mail do usuário
+=======
+        Login login;
+        
+        login = new Login(registerDTO);
+        boolean emailFounded = loginRepository.existsByEmail(login.getEmail());
+        if (emailFounded) {
+            throw new DuplicateEmailException("E-mail já cadastrado");
+        }
+           if(!registerDTO.senha().equals(registerDTO.repetirSenha())){
+            throw new PasswordsNotMatchingException("As senhas não coincidem.");
+        }
+
+        PetOwner petOwner = new PetOwner(registerDTO);
+
+        login.setPetOwner(petOwner);
+
+        loginRepository.save(login);
+
+        var uri = uriBuilder.path("/profile/{id}").buildAndExpand(login.getId()).toUri();
+
+>>>>>>> 0861db8e17ca107accefe0fd0ce002247b49ad84
         return ResponseEntity.created(uri).body(new EmailDTO(login.getEmail()));
     }
 }

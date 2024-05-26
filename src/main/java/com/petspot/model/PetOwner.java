@@ -27,12 +27,15 @@ public class PetOwner {
 
     private Date birthday;
 
+<<<<<<< HEAD
     private String country;
 
     private String phone;
 
     private boolean newsletterCheck;
 
+=======
+>>>>>>> 0861db8e17ca107accefe0fd0ce002247b49ad84
     @OneToOne(mappedBy = "petOwner")
     private Login login;
 
@@ -44,8 +47,13 @@ public class PetOwner {
         this.name = registerDTO.nome();
         this.lastName = registerDTO.sobrenome();
         this.birthday = registerDTO.getDate();
+<<<<<<< HEAD
         this.country = registerDTO.pais();
         this.phone = registerDTO.telefone();
         this.newsletterCheck = registerDTO.newsletterCheck();
     }
 }
+=======
+    }
+}
+>>>>>>> 0861db8e17ca107accefe0fd0ce002247b49ad84
