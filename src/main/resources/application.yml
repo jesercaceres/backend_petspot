@@ -3,7 +3,7 @@ spring:
     name: petspot-restful-api
   datasource:
     url: jdbc:mysql://petspot-api-server.mysql.database.azure.com:3306/petspot?useSSL=true&requireSSL=true
-    username: tafpegmkbq
+    username: tafpegmkbq@petspot-api-server
     password: x$JX9aN1tS7w22uv
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
