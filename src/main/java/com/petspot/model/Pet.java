@@ -48,7 +48,6 @@ public class Pet {
         this.vaccinated = petDTO.vacinado();
     }
 
-    // Adicionando manualmente os métodos get
     public String getId() {
         return id;
     }

@@ -27,6 +27,12 @@ public class PetOwner {
 
     private Date birthday;
 
+    private String country;
+
+    private String phone;
+
+    private boolean newsletterCheck;
+
     @OneToOne(mappedBy = "petOwner")
     private Login login;
 
@@ -38,5 +44,8 @@ public class PetOwner {
         this.name = registerDTO.nome();
         this.lastName = registerDTO.sobrenome();
         this.birthday = registerDTO.getDate();
+        this.country = registerDTO.pais();
+        this.phone = registerDTO.telefone();
+        this.newsletterCheck = registerDTO.newsletterCheck();
     }
 }

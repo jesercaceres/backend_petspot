@@ -32,7 +32,7 @@ public class PetController {
 
     @Autowired
     private PetOwnerRepository ownerRepository;
-
+        //OwnerID é passado como parametro.
     @PostMapping("/pet-register/{id}")
     @Transactional
     public ResponseEntity<SavedDatasPetDTO> registerPet(@Valid @RequestBody RegisterPetDTO petDTO,

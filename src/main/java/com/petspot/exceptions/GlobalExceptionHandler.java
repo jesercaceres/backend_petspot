@@ -30,21 +30,29 @@ public class GlobalExceptionHandler {
     // Método para tratar exceções de pet duplicado
     @ExceptionHandler(DuplicatePetException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
-    public ResponseEntity<String> handleDuplicatePetException(DuplicatePetException ex) {
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
+    public ResponseEntity<MessageResponse> handleDuplicatePetException(DuplicatePetException ex) {
+        MessageResponse response = new MessageResponse(ex.getMessage(), true);
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
     }
 
-    // Método para tratar exceções genéricas
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ResponseEntity<String> handleGenericException(Exception ex) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Ocorreu um erro interno no servidor.");
+    public ResponseEntity<MessageResponse> handleGenericException(Exception ex) {
+        MessageResponse response = new MessageResponse("Ocorreu um erro interno no servidor.", true);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
     }
 
     @ExceptionHandler(DuplicateEmailException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
-    public ResponseEntity<String> handleDuplicateEmailException(DuplicateEmailException ex) {
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
+    public ResponseEntity<MessageResponse> handleDuplicateEmailException(DuplicateEmailException ex) {
+        MessageResponse response = new MessageResponse(ex.getMessage(), true);
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
     }
 
+    @ExceptionHandler(PasswordsNotMatchingException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<MessageResponse> handlePasswordsNotMatchingException(PasswordsNotMatchingException ex) {
+        MessageResponse response = new MessageResponse(ex.getMessage(), true);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    }
 }
