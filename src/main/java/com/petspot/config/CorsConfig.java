@@ -12,7 +12,7 @@ public class CorsConfig {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(@SuppressWarnings("null") CorsRegistry registry) {
-                registry.addMapping("/**").allowedOrigins("https://frontend-petspot.vercel.app/");
+                registry.addMapping("/**").allowedOrigins("https://petspot-frontend.vercel.app/");
             }
         };
     }
