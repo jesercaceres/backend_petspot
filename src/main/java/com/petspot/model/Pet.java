@@ -39,6 +39,7 @@ public class Pet {
     public Pet(RegisterPetDTO petDTO) {
         this.petName = petDTO.nome();
         this.petBirthday = petDTO.getDate();
+        this.petWeight = petDTO.peso();
         this.petSpecie = petDTO.especie();
         this.petRace = petDTO.raca();
         this.petGender = petDTO.genero();
