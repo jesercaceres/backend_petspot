@@ -12,7 +12,7 @@ public record RegisterPetDTO(
         @NotBlank(message = "Nome é obrigatório") String nome,
         @NotBlank(message = "Espécie é obrigatória") String especie,
         @NotNull(message = "Gênero é obrigatório") Integer genero,
-        @NotBlank(message = "Raça é obrigatória") String raca,
+        @NotBlank(message = "Raça é obrigatória") String raca,        
         String peso,
         @NotNull(message = "Deve específicar se o Animal foi castrado")Boolean castrado,
         @NotBlank(message = "comportamento é obrigatório")String comportamento,
