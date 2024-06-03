@@ -9,6 +9,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @RestController
 @RequestMapping("/login")
 public class LoginController {
@@ -16,14 +19,18 @@ public class LoginController {
     private LoginRepository repository;
 
     @PostMapping
-    public ResponseEntity<String> signIn(@RequestBody @Valid LoginDTO loginDTO) {
+    public ResponseEntity<Map<String, String>> signIn(@RequestBody @Valid LoginDTO loginDTO) {
         Login auth = repository.findByEmailAndPasswordLogin(loginDTO.email(), loginDTO.senha());
 
         if (auth != null) {
             // Retorna o ID do tutor no corpo da resposta
-            return ResponseEntity.ok(auth.getOwnerId());
+            Map<String, String> response = new HashMap<>();
+            response.put("ownerId", auth.getOwnerId());
+            return ResponseEntity.ok(response);
         }
 
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciais inválidas, verifique os dados e tente novamente.");
+        Map<String, String> errorResponse = new HashMap<>();
+        errorResponse.put("error", "Credenciais inválidas, verifique os dados e tente novamente.");
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
     }
 }

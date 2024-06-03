@@ -50,6 +50,7 @@ public class RegisterController {
         // Cria a URI para o novo recurso criado
         var uri = uriBuilder.path("/profile/{id}").buildAndExpand(login.getId()).toUri();
 
+
         // Retorna a resposta com a URI do novo recurso e o e-mail do usuário
         return ResponseEntity.created(uri).body(new EmailDTO(login.getEmail()));
     }
