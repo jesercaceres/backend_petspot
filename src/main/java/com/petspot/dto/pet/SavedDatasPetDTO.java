@@ -6,18 +6,18 @@ import java.util.Date;
 public record SavedDatasPetDTO(
         String id,
         String nome,
-        String peso,
         String especie,
+        String peso,
         Integer genero,
         String raca,
         Boolean castrado,
         String comportamento,
         String porte,
         Boolean vacinado,
-        Date idade) {
+        Date dataDeNascimento) {
     
     public SavedDatasPetDTO(Pet pet) {
-        this(pet.getId(), pet.getPetName(),pet.getPetWeight(), pet.getPetSpecie(), pet.getPetGender(), pet.getPetRace(),
+        this(pet.getId(), pet.getPetName(), pet.getPetSpecie(), pet.getPetWeight(), pet.getPetGender(), pet.getPetRace(),
              pet.getNeutered(), pet.getBehavior(), pet.getPetSize(), pet.getVaccinated(), pet.getPetBirthday());
     }
 }

@@ -49,6 +49,13 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
     }
 
+    @ExceptionHandler(PasswordSizeException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<MessageResponse> handlePasswordsSizeException(PasswordSizeException ex) {
+        MessageResponse response = new MessageResponse(ex.getMessage(), true);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    }
+
     @ExceptionHandler(PasswordsNotMatchingException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<MessageResponse> handlePasswordsNotMatchingException(PasswordsNotMatchingException ex) {

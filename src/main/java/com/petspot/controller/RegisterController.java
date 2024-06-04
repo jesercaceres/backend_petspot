@@ -2,8 +2,7 @@ package com.petspot.controller;
 
 import com.petspot.dto.login.EmailDTO;
 import com.petspot.dto.register.RegisterDTO;
-import com.petspot.exceptions.DuplicateEmailException;
-import com.petspot.exceptions.PasswordsNotMatchingException;
+import com.petspot.exceptions.*;
 import com.petspot.model.Login;
 import com.petspot.model.PetOwner;
 import com.petspot.repository.LoginRepository;
@@ -24,7 +23,7 @@ public class RegisterController {
 
     @PostMapping
     public ResponseEntity<EmailDTO> register(@RequestBody @Validated RegisterDTO registerDTO,
-            UriComponentsBuilder uriBuilder) throws PasswordsNotMatchingException, DuplicateEmailException {
+            UriComponentsBuilder uriBuilder) throws PasswordsNotMatchingException, DuplicateEmailException, PasswordSizeException {
 
         // Verifica se o e-mail já está cadastrado
         boolean emailFounded = loginRepository.existsByEmail(registerDTO.email());
@@ -36,6 +35,11 @@ public class RegisterController {
         if (!registerDTO.senha().equals(registerDTO.repetirSenha())) {
             throw new PasswordsNotMatchingException("As senhas não coincidem.");
         }
+
+        if (registerDTO.senha().length() < 8 || registerDTO.repetirSenha().length() < 8) {
+            throw new PasswordSizeException("A senha deve conter no mínimo 8 caracteres");
+        }
+
 
         // Cria um novo objeto PetOwner a partir do DTO
         PetOwner petOwner = new PetOwner(registerDTO);

@@ -10,8 +10,8 @@ import java.util.Date;
 
 public record RegisterDTO(
         @Email String email,
-        @NotBlank @Size(min = 8) String senha,
-        @NotBlank @Size(min = 8) String repetirSenha,
+        @NotBlank String senha,
+        @NotBlank String repetirSenha,
         @NotBlank String usuario,
         @NotBlank String nome,
         @NotBlank String sobrenome,

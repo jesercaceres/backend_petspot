@@ -49,46 +49,47 @@ public class Pet {
         this.vaccinated = petDTO.vacinado();
     }
 
+    // Getters e setters
     public String getId() {
         return id;
     }
-
+    
     public String getPetName() {
         return petName;
     }
-
+    
     public String getPetWeight() {
         return petWeight;
     }
-
+    
     public Date getPetBirthday() {
         return petBirthday;
     }
-
+    
     public String getPetSpecie() {
         return petSpecie;
     }
-
+    
     public String getPetRace() {
         return petRace;
     }
-
+    
     public Integer getPetGender() {
         return petGender;
     }
-
+    
     public Boolean getNeutered() {
         return neutered;
     }
-
+    
     public String getBehavior() {
         return behavior;
     }
-
+    
     public String getPetSize() {
         return petSize;
     }
-
+    
     public Boolean getVaccinated() {
         return vaccinated;
     }
