@@ -2,9 +2,9 @@ spring:
   application:
     name: petspot-restful-api
   datasource:
-    url: jdbc:mysql://localhost:3306/petspot
-    username: root
-    password: 1234
+    url: jdbc:mysql://petspot-api-server.mysql.database.azure.com:3306/petspot?useSSL=true
+    username: tafpegmkbq
+    password: x$JX9aN1tS7w22uv
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
