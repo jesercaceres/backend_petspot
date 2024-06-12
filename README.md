@@ -1,3 +1,5 @@
+![Logo-petspot.png](https://i.imgur.com/HXCtZ0w.png)
+
 ### Enunciado do Cenário
 
 Imagine que você é um dono de animal de estimação que deseja centralizar e manter a saúde e bem-estar do seu pet. Para facilitar esse processo, a plataforma **Animal Spot** foi desenvolvida, visando simplificar e unificar o acesso a todas as informações essenciais do seu animal de estimação.
@@ -25,7 +27,7 @@ Feature: Sistema de Registro e Gerenciamento de Pets
     And que o usuário fornece um email válido, senha, nome, sobrenome, data de nascimento, país e telefone
     When o usuário confirma o registro
     Then o sistema deve criar uma nova conta de usuário
-    And o sistema deve retornar o email do usuário registrado
+    And o sistema deve retornar uma mensagem exibindo que o cadastro foi realizado com sucesso.
 
   Scenario: Registro de usuário com email duplicado
     Given que o usuário deseja se registrar no sistema
@@ -105,3 +107,29 @@ Feature: Sistema de Registro e Gerenciamento de Pets
     And que o usuário fornece um nome parcial de pet
     When o usuário realiza a busca pelo nome do pet
     Then o sistema deve retornar uma lista de pets que correspondem ao nome fornecido
+```
+## Execução dos cenários
+
+`Cenário 1:` Registro de novo usuário com sucesso.
+
+<img src="https://i.imgur.com/jnu7iVv.jpeg" alt="cenario1.png" width="800"/>
+
+`Cenário 2:` Registro de usuário com email duplicado.
+
+<img src="https://i.imgur.com/4wokVW8.png" alt="cenario1.png" width="800"/>
+
+`Cenário 3: `Registro de usuário com senhas não coincidentes.
+
+<img src="https://i.imgur.com/v6Hk4xN.png" alt="cenario1.png" width="800"/>
+
+`Cenário 4:` Registro de usuário com senha menor que 8 caracteres.
+
+<img src="https://i.imgur.com/BNm4uTn.png" alt="cenario1.png" width="800"/>
+
+`Cenário 5:` Registro de usuário com campos obrigatórios não preenchidos.
+
+<img src="https://i.imgur.com/Atg8zfH.png" width="800"/>
+
+
+
+  
